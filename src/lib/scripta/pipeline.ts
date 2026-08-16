@@ -104,19 +104,17 @@ const AR_PARAS = [
 ];
 
 export const chapterTitle = (index: number, lang: Lang) =>
-  (lang === "ar" ? AR_TITLES : EN_TITLES)[index % 30];
+  (lang === "ar" ? AR_TITLES : EN_TITLES)[index % 30] ?? "Untitled";
 
 /** Deterministic-ish mock chapter body. */
 export function chapterBody(index: number, lang: Lang, synopsis: string): string {
   const pool = lang === "ar" ? AR_PARAS : EN_PARAS;
-  const opener =
-    lang === "ar"
-      ? `${synopsis.trim().split(/\s+/).slice(0, 18).join(" ")}…`
-      : `${synopsis.trim().split(/\s+/).slice(0, 18).join(" ")}…`;
+  const opener = `${synopsis.trim().split(/\s+/).slice(0, 18).join(" ")}…`;
   const paras: string[] = [opener];
   for (let i = 0; i < 6; i++) {
-    paras.push(pool[(index * 3 + i) % pool.length]);
+    paras.push(pool[(index * 3 + i) % pool.length] ?? "");
   }
+
   return paras.join("\n\n");
 }
 
