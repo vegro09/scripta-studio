@@ -74,7 +74,7 @@ function useCountUp(target: number, enabled: boolean) {
 function MetricCard({ label, value, lang }: { label: string; value: number | null; lang: Lang }) {
   const animated = useCountUp(value ?? 0, value !== null);
   return (
-    <div className="rounded-lg border border-border bg-surface p-5">
+    <div className="rounded-lg border border-border bg-surface p-5 shadow-sm">
       <p className="text-xs uppercase tracking-widest text-muted-foreground">{label}</p>
       <p className="mt-3 font-serif text-3xl">{value === null ? "—" : nf(lang, animated)}</p>
     </div>
