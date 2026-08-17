@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
-import { Pencil, Plus, Trash2, Download, FileText, Upload } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Pencil, Plus, Trash2, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -74,7 +74,7 @@ function useCountUp(target: number, enabled: boolean) {
 function MetricCard({ label, value, lang }: { label: string; value: number | null; lang: Lang }) {
   const animated = useCountUp(value ?? 0, value !== null);
   return (
-    <div className="rounded-lg border border-border bg-surface p-5 shadow-sm">
+    <div className="rounded-lg border border-border bg-surface p-5">
       <p className="text-xs uppercase tracking-widest text-muted-foreground">{label}</p>
       <p className="mt-3 font-serif text-3xl">{value === null ? "—" : nf(lang, animated)}</p>
     </div>
@@ -84,10 +84,9 @@ function MetricCard({ label, value, lang }: { label: string; value: number | nul
 const CATEGORIES: SkillCategory[] = ["Style", "Anti-AI Filter", "Pacing", "Structure"];
 
 function DashboardPage() {
-  const { lang, skills, books, addSkill, importSkill, updateSkill, deleteSkill } = useScripta();
+  const { lang, skills, books, addSkill, updateSkill, deleteSkill } = useScripta();
   const [editing, setEditing] = useState<Skill | "new" | null>(null);
   const [pendingDelete, setPendingDelete] = useState<Skill | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [name, setName] = useState("");
   const [category, setCategory] = useState<SkillCategory>("Style");
@@ -117,18 +116,6 @@ function DashboardPage() {
       updateSkill(editing.id, { name: name.trim(), category, directive: directive.trim(), strength });
     }
     setEditing(null);
-  };
-
-  const handleFileImport = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      const text = typeof reader.result === "string" ? reader.result : "";
-      importSkill(file.name, text);
-    };
-    reader.readAsText(file);
-    e.target.value = "";
   };
 
   const totalPages = books.reduce((a, b) => a + b.pages, 0);
@@ -175,35 +162,17 @@ function DashboardPage() {
         </section>
 
         <section className="space-y-4">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 sm:flex sm:justify-between">
             <h2 className="truncate font-serif text-2xl">{t(lang, "skillVault")}</h2>
-            <div className="flex shrink-0 items-center gap-3">
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept=".md,.markdown,text/markdown"
-                className="sr-only"
-                onChange={handleFileImport}
-                aria-label={t(lang, "importSkill")}
-              />
-              <Button
-                variant="outline"
-                onClick={() => fileInputRef.current?.click()}
-                className="gap-2 border-border bg-surface hover:bg-surface-alt"
-              >
-                <Upload className="size-4" aria-hidden />
-                {t(lang, "importSkillMd")}
-              </Button>
-              <Button onClick={openNew} className="gap-2 bg-foreground text-background hover:bg-foreground/90">
-                <Plus className="size-4" aria-hidden />
-                {t(lang, "addSkill")}
-              </Button>
-            </div>
+            <Button onClick={openNew} className="shrink-0 gap-2">
+              <Plus className="size-4" aria-hidden />
+              {t(lang, "addSkill")}
+            </Button>
           </div>
 
           {skills.length === 0 ? (
             <div className="rounded-lg border border-dashed border-border bg-surface-alt/50 p-10 text-center">
-              <p className="mx-auto max-w-md font-serif text-lg leading-relaxed">{t(lang, "emptySkills")}</p>
+              <p className="font-serif text-lg">{t(lang, "emptySkills")}</p>
               <Button onClick={openNew} variant="outline" className="mt-4">
                 {t(lang, "emptySkillsCta")}
               </Button>
@@ -213,49 +182,44 @@ function DashboardPage() {
               {skills.map((s) => (
                 <article
                   key={s.id}
-                  className="flex flex-col rounded-lg border border-border bg-surface p-5 shadow-sm"
+                  className="flex flex-col rounded-lg border border-border bg-surface p-5"
                 >
-                  <div className="flex items-start justify-between gap-4">
+                  <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
                     <div className="min-w-0">
                       <h3 className="truncate font-serif text-lg">{s.name}</h3>
-                      <p className="mt-1.5 inline-block rounded-full border border-border bg-background px-2.5 py-0.5 text-xs text-muted-foreground">
+                      <p className="mt-1 inline-block rounded-full border border-border bg-background px-2 py-0.5 text-xs text-muted-foreground">
                         {t(lang, CATEGORY_KEYS[s.category] ?? "catStyle")}
                       </p>
                     </div>
-                    <Switch
-                      id={`toggle-${s.id}`}
-                      checked={s.active}
-                      onCheckedChange={(v) => updateSkill(s.id, { active: v })}
-                      aria-label={`${t(lang, "activeToggle")}: ${s.name}`}
-                    />
+                    <div className="flex shrink-0 items-center gap-2">
+                      <Label htmlFor={`toggle-${s.id}`} className="text-xs text-muted-foreground">
+                        {t(lang, "activeToggle")}
+                      </Label>
+                      <Switch
+                        id={`toggle-${s.id}`}
+                        checked={s.active}
+                        onCheckedChange={(v) => updateSkill(s.id, { active: v })}
+                      />
+                    </div>
                   </div>
-                  <p className="mt-4 grow text-sm leading-relaxed text-muted-foreground">
+                  <p className="mt-3 grow text-sm leading-relaxed text-muted-foreground">
                     {s.directive}
                   </p>
-                  <div className="mt-5 flex items-center justify-between gap-3 border-t border-border pt-3">
-                    <div className="flex items-center gap-3">
-                      {s.importedFrom ? (
-                        <span className="inline-flex items-center gap-1.5 rounded-md border border-border bg-background px-2 py-1 text-xs text-muted-foreground">
-                          <FileText className="size-3.5" aria-hidden />
-                          <span>{t(lang, "markdownTag")}</span>
-                        </span>
-                      ) : (
-                        <span className="flex items-center gap-2 text-xs text-muted-foreground">
-                          {t(lang, STRENGTH_LABEL_KEYS[s.strength - 1] ?? "strengthBalanced")}
-                          <span className="flex gap-1" aria-hidden>
-                            {[1, 2, 3, 4, 5].map((n) => (
-                              <span
-                                key={n}
-                                className={cn(
-                                  "size-1.5 rounded-full",
-                                  n <= s.strength ? "bg-foreground" : "bg-input",
-                                )}
-                              />
-                            ))}
-                          </span>
-                        </span>
-                      )}
-                    </div>
+                  <div className="mt-4 flex items-center justify-between gap-3 border-t border-border pt-3">
+                    <span className="flex items-center gap-2 text-xs text-muted-foreground">
+                      {t(lang, STRENGTH_LABEL_KEYS[s.strength - 1] ?? "strengthBalanced")}
+                      <span className="flex gap-1" aria-hidden>
+                        {[1, 2, 3, 4, 5].map((n) => (
+                          <span
+                            key={n}
+                            className={cn(
+                              "size-1.5 rounded-full",
+                              n <= s.strength ? "bg-foreground" : "bg-input",
+                            )}
+                          />
+                        ))}
+                      </span>
+                    </span>
                     <span className="flex gap-1">
                       <Button
                         variant="ghost"
@@ -287,7 +251,7 @@ function DashboardPage() {
           <h2 className="font-serif text-2xl">{t(lang, "archive")}</h2>
           {books.length === 0 ? (
             <div className="rounded-lg border border-dashed border-border bg-surface-alt/50 p-10 text-center">
-              <p className="mx-auto max-w-md font-serif text-lg leading-relaxed">{t(lang, "emptyBooks")}</p>
+              <p className="font-serif text-lg">{t(lang, "emptyBooks")}</p>
               <Button asChild variant="outline" className="mt-4">
                 <Link to="/studio">{t(lang, "goStudio")}</Link>
               </Button>

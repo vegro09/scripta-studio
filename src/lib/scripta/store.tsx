@@ -11,7 +11,6 @@ export type Skill = {
   /** 1-5: Subtle · Light · Balanced · Strong · Aggressive */
   strength: number;
   active: boolean;
-  importedFrom?: { source: "markdown"; fileName: string };
 };
 
 export type BookRecord = {
@@ -95,7 +94,6 @@ type Ctx = {
   setLang: (l: Lang) => void;
   skills: Skill[];
   addSkill: (s: Omit<Skill, "id">) => void;
-  importSkill: (fileName: string, markdown: string) => void;
   updateSkill: (id: string, patch: Partial<Skill>) => void;
   deleteSkill: (id: string) => void;
   books: BookRecord[];
@@ -146,28 +144,6 @@ export function ScriptaProvider({ children }: { children: ReactNode }) {
     setSkills((prev) => [...prev, { ...s, id: `skill-${Date.now()}-${prev.length}` }]);
   }, []);
 
-  const importSkill = useCallback((fileName: string, markdown: string) => {
-    const lines = markdown.split(/\r?\n/);
-    const titleLine = lines.find((l) => l.trim().startsWith("#"));
-    const title = titleLine ? titleLine.replace(/^#+\s*/, "").trim() : fileName.replace(/\.md$/i, "");
-    const body = lines
-      .filter((l) => !l.trim().startsWith("#") && l.trim().length > 0)
-      .join("\n")
-      .trim();
-    setSkills((prev) => [
-      ...prev,
-      {
-        id: `skill-${Date.now()}-${prev.length}`,
-        name: title || fileName,
-        category: "Style",
-        directive: body || `Imported skill from ${fileName}`,
-        strength: 3,
-        active: true,
-        importedFrom: { source: "markdown", fileName },
-      },
-    ]);
-  }, []);
-
   const updateSkill = useCallback((id: string, patch: Partial<Skill>) => {
     setSkills((prev) => prev.map((s) => (s.id === id ? { ...s, ...patch } : s)));
   }, []);
@@ -188,20 +164,8 @@ export function ScriptaProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo<Ctx>(
-    () => ({
-      lang,
-      setLang,
-      skills,
-      addSkill,
-      importSkill,
-      updateSkill,
-      deleteSkill,
-      books,
-      addBook,
-      reader,
-      setReader,
-    }),
-    [lang, skills, addSkill, importSkill, updateSkill, deleteSkill, books, addBook, reader, setReader],
+    () => ({ lang, setLang, skills, addSkill, updateSkill, deleteSkill, books, addBook, reader, setReader }),
+    [lang, skills, addSkill, updateSkill, deleteSkill, books, addBook, reader, setReader],
   );
 
   return <ScriptaContext.Provider value={value}>{children}</ScriptaContext.Provider>;
