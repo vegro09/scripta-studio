@@ -84,9 +84,10 @@ function MetricCard({ label, value, lang }: { label: string; value: number | nul
 const CATEGORIES: SkillCategory[] = ["Style", "Anti-AI Filter", "Pacing", "Structure"];
 
 function DashboardPage() {
-  const { lang, skills, books, addSkill, updateSkill, deleteSkill } = useScripta();
+  const { lang, skills, books, addSkill, importSkill, updateSkill, deleteSkill } = useScripta();
   const [editing, setEditing] = useState<Skill | "new" | null>(null);
   const [pendingDelete, setPendingDelete] = useState<Skill | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [name, setName] = useState("");
   const [category, setCategory] = useState<SkillCategory>("Style");
