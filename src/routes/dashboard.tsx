@@ -119,6 +119,18 @@ function DashboardPage() {
     setEditing(null);
   };
 
+  const handleFileImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const text = typeof reader.result === "string" ? reader.result : "";
+      importSkill(file.name, text);
+    };
+    reader.readAsText(file);
+    e.target.value = "";
+  };
+
   const totalPages = books.reduce((a, b) => a + b.pages, 0);
   const avgScore = books.length
     ? Math.round(books.reduce((a, b) => a + b.humanizerScore, 0) / books.length)
