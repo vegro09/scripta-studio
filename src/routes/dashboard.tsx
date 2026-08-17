@@ -213,44 +213,49 @@ function DashboardPage() {
               {skills.map((s) => (
                 <article
                   key={s.id}
-                  className="flex flex-col rounded-lg border border-border bg-surface p-5"
+                  className="flex flex-col rounded-lg border border-border bg-surface p-5 shadow-sm"
                 >
-                  <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
+                  <div className="flex items-start justify-between gap-4">
                     <div className="min-w-0">
                       <h3 className="truncate font-serif text-lg">{s.name}</h3>
-                      <p className="mt-1 inline-block rounded-full border border-border bg-background px-2 py-0.5 text-xs text-muted-foreground">
+                      <p className="mt-1.5 inline-block rounded-full border border-border bg-background px-2.5 py-0.5 text-xs text-muted-foreground">
                         {t(lang, CATEGORY_KEYS[s.category] ?? "catStyle")}
                       </p>
                     </div>
-                    <div className="flex shrink-0 items-center gap-2">
-                      <Label htmlFor={`toggle-${s.id}`} className="text-xs text-muted-foreground">
-                        {t(lang, "activeToggle")}
-                      </Label>
-                      <Switch
-                        id={`toggle-${s.id}`}
-                        checked={s.active}
-                        onCheckedChange={(v) => updateSkill(s.id, { active: v })}
-                      />
-                    </div>
+                    <Switch
+                      id={`toggle-${s.id}`}
+                      checked={s.active}
+                      onCheckedChange={(v) => updateSkill(s.id, { active: v })}
+                      aria-label={`${t(lang, "activeToggle")}: ${s.name}`}
+                    />
                   </div>
-                  <p className="mt-3 grow text-sm leading-relaxed text-muted-foreground">
+                  <p className="mt-4 grow text-sm leading-relaxed text-muted-foreground">
                     {s.directive}
                   </p>
-                  <div className="mt-4 flex items-center justify-between gap-3 border-t border-border pt-3">
-                    <span className="flex items-center gap-2 text-xs text-muted-foreground">
-                      {t(lang, STRENGTH_LABEL_KEYS[s.strength - 1] ?? "strengthBalanced")}
-                      <span className="flex gap-1" aria-hidden>
-                        {[1, 2, 3, 4, 5].map((n) => (
-                          <span
-                            key={n}
-                            className={cn(
-                              "size-1.5 rounded-full",
-                              n <= s.strength ? "bg-foreground" : "bg-input",
-                            )}
-                          />
-                        ))}
-                      </span>
-                    </span>
+                  <div className="mt-5 flex items-center justify-between gap-3 border-t border-border pt-3">
+                    <div className="flex items-center gap-3">
+                      {s.importedFrom ? (
+                        <span className="inline-flex items-center gap-1.5 rounded-md border border-border bg-background px-2 py-1 text-xs text-muted-foreground">
+                          <FileText className="size-3.5" aria-hidden />
+                          <span>{t(lang, "markdownTag")}</span>
+                        </span>
+                      ) : (
+                        <span className="flex items-center gap-2 text-xs text-muted-foreground">
+                          {t(lang, STRENGTH_LABEL_KEYS[s.strength - 1] ?? "strengthBalanced")}
+                          <span className="flex gap-1" aria-hidden>
+                            {[1, 2, 3, 4, 5].map((n) => (
+                              <span
+                                key={n}
+                                className={cn(
+                                  "size-1.5 rounded-full",
+                                  n <= s.strength ? "bg-foreground" : "bg-input",
+                                )}
+                              />
+                            ))}
+                          </span>
+                        </span>
+                      )}
+                    </div>
                     <span className="flex gap-1">
                       <Button
                         variant="ghost"
