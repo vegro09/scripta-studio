@@ -1,24 +1,22 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
 export const Route = createFileRoute("/")({
-  component: Index,
+  loader: () => {
+    throw redirect({ to: "/studio" });
+  },
+  head: () => ({
+    meta: [
+      { title: "Scripta — AI Book Authoring Platform" },
+      {
+        name: "description",
+        content:
+          "Scripta architects full-length books: configure title, synopsis, genre and scale, then generate, read and export a complete manuscript.",
+      },
+      { property: "og:title", content: "Scripta — AI Book Authoring Platform" },
+      {
+        property: "og:description",
+        content: "Editorial-grade long-form manuscript generation with a custom skill engine.",
+      },
+    ],
+  }),
 });
-
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
-function Index() {
-  return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
-  );
-}

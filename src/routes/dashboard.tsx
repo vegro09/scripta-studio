@@ -50,7 +50,7 @@ export const Route = createFileRoute("/dashboard")({
       },
     ],
   }),
-  component: DashboardPage;
+  component: DashboardPage,
 });
 
 function useCountUp(target: number, enabled: boolean) {
