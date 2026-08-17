@@ -175,12 +175,30 @@ function DashboardPage() {
         </section>
 
         <section className="space-y-4">
-          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 sm:flex sm:justify-between">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <h2 className="truncate font-serif text-2xl">{t(lang, "skillVault")}</h2>
-            <Button onClick={openNew} className="shrink-0 gap-2">
-              <Plus className="size-4" aria-hidden />
-              {t(lang, "addSkill")}
-            </Button>
+            <div className="flex shrink-0 items-center gap-3">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".md,.markdown,text/markdown"
+                className="sr-only"
+                onChange={handleFileImport}
+                aria-label={t(lang, "importSkill")}
+              />
+              <Button
+                variant="outline"
+                onClick={() => fileInputRef.current?.click()}
+                className="gap-2 border-border bg-surface hover:bg-surface-alt"
+              >
+                <Upload className="size-4" aria-hidden />
+                {t(lang, "importSkillMd")}
+              </Button>
+              <Button onClick={openNew} className="gap-2 bg-foreground text-background hover:bg-foreground/90">
+                <Plus className="size-4" aria-hidden />
+                {t(lang, "addSkill")}
+              </Button>
+            </div>
           </div>
 
           {skills.length === 0 ? (
