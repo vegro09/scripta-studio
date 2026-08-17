@@ -203,7 +203,7 @@ function DashboardPage() {
 
           {skills.length === 0 ? (
             <div className="rounded-lg border border-dashed border-border bg-surface-alt/50 p-10 text-center">
-              <p className="font-serif text-lg">{t(lang, "emptySkills")}</p>
+              <p className="mx-auto max-w-md font-serif text-lg leading-relaxed">{t(lang, "emptySkills")}</p>
               <Button onClick={openNew} variant="outline" className="mt-4">
                 {t(lang, "emptySkillsCta")}
               </Button>
@@ -287,7 +287,7 @@ function DashboardPage() {
           <h2 className="font-serif text-2xl">{t(lang, "archive")}</h2>
           {books.length === 0 ? (
             <div className="rounded-lg border border-dashed border-border bg-surface-alt/50 p-10 text-center">
-              <p className="font-serif text-lg">{t(lang, "emptyBooks")}</p>
+              <p className="mx-auto max-w-md font-serif text-lg leading-relaxed">{t(lang, "emptyBooks")}</p>
               <Button asChild variant="outline" className="mt-4">
                 <Link to="/studio">{t(lang, "goStudio")}</Link>
               </Button>
